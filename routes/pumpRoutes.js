@@ -192,5 +192,24 @@ router.post("/auto-check", async (req, res) => {
     res.status(500).json({ message: "❌ Error", error: err.message });
   }
 });
+// Get current pump status (basic route)
+router.get("/", async (req, res) => {
+  try {
+    // latest pump log = last known action (ON or OFF)
+    const latestLog = await PumpLog.findOne().sort({ createdAt: -1 });
+
+    if (!latestLog) {
+      return res.json({ status: "unknown", message: "No pump logs yet" });
+    }
+
+    res.json({
+      status: latestLog.action,
+      lastUpdated: latestLog.createdAt,
+    });
+  } catch (err) {
+    console.error("pumpRoutes GET error:", err);
+    res.status(500).json({ message: "❌ Error", error: err.message });
+  }
+});
 
 export default router;
