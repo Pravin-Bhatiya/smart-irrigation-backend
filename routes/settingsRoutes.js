@@ -39,5 +39,18 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "❌ Error", error: err.message });
   }
 });
+// Get latest settings
+router.get("/latest", async (req, res) => {
+  try {
+    const latest = await Setting.findOne().sort({ createdAt: -1 });
+    if (!latest) {
+      return res.status(404).json({ message: "No settings found" });
+    }
+    res.json(latest);
+  } catch (err) {
+    console.error("settingsRoutes latest error:", err);
+    res.status(500).json({ message: "❌ Error", error: err.message });
+  }
+});
 
 export default router;
